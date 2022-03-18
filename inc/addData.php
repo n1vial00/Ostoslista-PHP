@@ -1,7 +1,10 @@
 <?php
-require "headers.php";
-require "functions.php";
+require_once "headers.php";
+require_once "functions.php";
 
+$input = json_decode(file_get_contents("php://input"));
+$description = filter_var($input->description, FILTER_SANITIZE_SPECIAL_CHARS);
+$amount = filter_var($input->amount, FILTER_SANITIZE_SPECIAL_CHARS);
 
 try {
     $db = openDB();
@@ -11,8 +14,8 @@ try {
     $query->bindValue(':amount',$amount,PDO::PARAM_INT);
 
     $query->execute();
-    header('HTTP/1.1. 200 OK');
-    $data = array('id' => $db->lastInsertId(),'description' = $description);
+    header('HTTP/1.1 200 OK');
+    $data = array('id' => $db->lastInsertId(),'description' => $description, 'amount' => $amount);
     print json_encode($data);
 
 } catch (PDOException $pdoex) {
